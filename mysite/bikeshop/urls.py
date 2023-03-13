@@ -8,14 +8,6 @@ urlpatterns = [
     path('bike_list/', views.BikeListView.as_view(), name='bike_list'),
     # Bike detail view with comment form
     path('<int:pk>/', views.BikeDetailView.as_view(), name='bike_detail'),
-    # # Bike create view
-    # path('bike/create/', views.BikeCreateView.as_view(), name='bike_create'),
-    # # Bike update view
-    # path('bike/<int:pk>/update/', views.BikeUpdateView.as_view(), name='bike_update'),
-    # # Bike delete view
-    # path('bike/<int:pk>/delete/', views.BikeDeleteView.as_view(), name='bike_delete'),
-    # # Order create view
-    # path('bike/<int:bike_id>/order/', views.order_create, name='order_create'),
     # Bike search view
     # path('search/', views.BikeSearchView.as_view(), name='bike_search'),
     # Category list view
@@ -36,4 +28,6 @@ urlpatterns = [
     path('order/<int:pk>/create/', views.OrderUpdateView.as_view(), name='order_update'),
     # Order delete view
     path('order/<int:pk>/delete/', views.OrderDeleteView.as_view(), name='order_delete'),
+
+    path('search/', views.search, name='search'),
 ]

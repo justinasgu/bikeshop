@@ -66,7 +66,7 @@ class BikeListView(generic.ListView):
     model = Bike
     template_name = 'bike_list.html'
     context_object_name = 'bikes'
-    paginate_by = 6
+
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -113,48 +113,6 @@ class BikeDetailView(FormMixin, generic.DetailView):
         messages.success(self.request, 'Your comment has been posted.')
         return super().form_valid(form)
 
-# from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
-# from .models import Bike
-# from .forms import BikeForm
-
-# class BikeCreateView(CreateView):
-#     model = Bike
-#     form_class = BikeForm
-#     template_name = 'bike_form.html'
-#     success_url = reverse_lazy('bike_list')
-#
-# class BikeUpdateView(UpdateView):
-#     model = Bike
-#     form_class = BikeForm
-#     template_name = 'bike_form.html'
-#     success_url = reverse_lazy('bike_list')
-#
-# class BikeDeleteView(DeleteView):
-#     model = Bike
-#     template_name = 'bike_confirm_delete.html'
-#     success_url = reverse_lazy('bike_list')
-#
-# # Order create view
-# @login_required
-# def order_create(request, bike_id):
-#     bike = get_object_or_404(Bike, id=bike_id)
-#
-#     if request.method == 'POST':
-#         form = OrderForm(request.POST)
-#         if form.is_valid():
-#             order = form.save(commit=False)
-#             order.user = request.user
-#             order.save()
-#             OrderLine.objects.create(order=order, bike=bike, quantity=form.cleaned_data['quantity'], price=bike.price)
-#             messages.success(request, 'Your order has been placed.')
-#             return redirect('bike_list')
-#     else:
-#         form = OrderForm()
-#
-#     return render(request, 'order_create.html', {'form': form, 'bike': bike})
-#
-#
 # User orders list view
 class OrderListView(LoginRequiredMixin, UserPassesTestMixin, generic.ListView):
     model = Order
@@ -169,21 +127,6 @@ class OrderListView(LoginRequiredMixin, UserPassesTestMixin, generic.ListView):
         return Order.objects.filter(user=self.request.user)
 
 
-#
-# Bike search view
-# class BikeSearchView(generic.ListView):
-#     model = Bike
-#     template_name = 'bike_list.html'
-#     context_object_name = 'bikes'
-#     paginate_by = 5
-#
-#     def get_queryset(self):
-#         query = self.request.GET.get('q')
-#         if query:
-#             queryset = self.model.objects.filter(Q(name__icontains=query) | Q(description__icontains=query))
-#         else:
-#             queryset = self.model.objects.all()
-#         return queryset
 
 
 # Category list view
@@ -279,3 +222,9 @@ class OrderDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteVie
         return self.request.user.is_authenticated
 
 
+
+
+def search(request):
+    query = request.GET.get('query')
+    search_results = Bike.objects.filter(Q(name__icontains=query) | Q(category__name__icontains=query) | Q(brand__name__icontains=query))
+    return render(request, 'search.html', {'bikes': search_results, 'query': query})

@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 
+
 # Bike model
 class Bike(models.Model):
     name = models.CharField(max_length=255)
@@ -14,9 +15,9 @@ class Bike(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     quantity_available = models.PositiveIntegerField(default=0)
 
-
     def __str__(self):
         return self.name
+
 
 # Category model
 class Category(models.Model):
@@ -27,6 +28,7 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+
 # Brand model
 class Brand(models.Model):
     name = models.CharField(max_length=255)
@@ -35,6 +37,7 @@ class Brand(models.Model):
 
     def __str__(self):
         return self.name
+
 
 # Order model
 
@@ -72,6 +75,7 @@ class OrderLine(models.Model):
     def __str__(self):
         return f'{self.quantity} x {self.bike.name}'
 
+
 # Comment model
 class Comment(models.Model):
     bike = models.ForeignKey('Bike', on_delete=models.CASCADE)
@@ -82,6 +86,7 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'Comment #{self.pk}'
+
 
 # User model (extends Django's built-in AbstractUser)
 class User(models.Model):
