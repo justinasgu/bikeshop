@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}asdasdsa{% endblock %}
+
+{% block content %}
+
+<h1>Stats of Bike Shop:</h1>
+
+<ul>
+    <li>Brands of Bikes: <b>{{ brandu_kiekis }}</b></li>
+    <li>Made Orders by User: <b>{{ atliktu_uzsakymu_kiekis }}</b></li>
+    <li>Models of Bikes: <b>{{ modeliu_kiekis }}</b></li>
+</ul>
+<p>This site you already visited {{ num_visits }} time(s).</p>
+
+{% endblock %}
+
