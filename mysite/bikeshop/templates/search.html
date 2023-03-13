@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Search Results for "{{ query }}"</h1>
+
+<ul>
+    {% for bike in bikes %}
+    <li>
+        <a href="{% url 'bike_detail' bike.pk %}">
+            {{ bike.name }} ({{ bike.brand.name }})
+        </a>
+    </li>
+    {% empty %}
+    <p>No results found for "{{ query }}".</p>
+    {% endfor %}
+</ul>
+{% endblock %}

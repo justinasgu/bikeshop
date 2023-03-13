@@ -1,27 +1,27 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-  <div class="row">
+<div class="row">
     {% for brand in object_list %}
-      <div class="col-md-4 mb-4">
+    <div class="col-md-4 mb-4">
         <div class="card">
 
-          {% if brand.image %}
+            {% if brand.image %}
             <img class="card-img-top" src="{{ brand.image.url }}" alt="{{ brand.name }}">
-          {% else %}
+            {% else %}
             <img class="card-img-top" src="{% static 'images/image.png' %}" alt="{{ brand.name }}">
-          {% endif %}
-          <div class="card-body">
-            <h5 class="card-title">{{ brand.name }}</h5>
-            <p class="card-text">{{ brand.description }}</p>
-            <a href="{% url 'brand_detail' brand.id %}" class="btn btn-primary">View Brand</a>
-          </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ brand.name }}</h5>
+                <p class="card-text">{{ brand.description }}</p>
+                <a href="{% url 'brand_detail' brand.id %}" class="btn btn-primary">View Brand</a>
+            </div>
         </div>
-      </div>
+    </div>
     {% empty %}
-      <div class="col-md-12">
+    <div class="col-md-12">
         <p>No brands found.</p>
-      </div>
+    </div>
     {% endfor %}
-  </div>
+</div>
 {% endblock %}

@@ -13,22 +13,22 @@
 <h2>Order Items</h2>
 <table class="table">
     <thead>
-        <tr>
-            <th>Product Name</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Total</th>
-        </tr>
+    <tr>
+        <th>Product Name</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Total</th>
+    </tr>
     </thead>
     <tbody>
-        {% for item in order.orderline.all %}
-        <tr>
-            <td>{{ item.product.name }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ item.price }}</td>
-            <td>{{ item.get_total }}</td>
-        </tr>
-        {% endfor %}
+    {% for item in order.orderline.all %}
+    <tr>
+        <td>{{ item.product.name }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.price }}</td>
+        <td>{{ item.get_total }}</td>
+    </tr>
+    {% endfor %}
     </tbody>
 </table>
 {% endblock %}

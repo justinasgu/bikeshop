@@ -1,9 +1,10 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from PIL import Image
+from django.conf import settings
 
 
-# Bike model
 class Bike(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -19,7 +20,6 @@ class Bike(models.Model):
         return self.name
 
 
-# Category model
 class Category(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -29,7 +29,6 @@ class Category(models.Model):
         return self.name
 
 
-# Brand model
 class Brand(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -37,9 +36,6 @@ class Brand(models.Model):
 
     def __str__(self):
         return self.name
-
-
-# Order model
 
 
 class Order(models.Model):
@@ -65,7 +61,6 @@ class Order(models.Model):
         return f"{self.user.username} - {self.bike.name}"
 
 
-# OrderLine model
 class OrderLine(models.Model):
     order = models.ForeignKey('Order', on_delete=models.CASCADE)
     bike = models.ForeignKey('Bike', on_delete=models.PROTECT)
@@ -76,10 +71,9 @@ class OrderLine(models.Model):
         return f'{self.quantity} x {self.bike.name}'
 
 
-# Comment model
 class Comment(models.Model):
     bike = models.ForeignKey('Bike', on_delete=models.CASCADE)
-    user = models.ForeignKey('User', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -88,10 +82,21 @@ class Comment(models.Model):
         return f'Comment #{self.pk}'
 
 
-# User model (extends Django's built-in AbstractUser)
-class User(models.Model):
-    user = models.OneToOneField(to=User, on_delete=models.CASCADE, related_name='profilis')
+class Profilis(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profilis')
     nuotrauka = models.ImageField(default='profile_pics/default.png', upload_to='profile_pics')
 
     def __str__(self):
         return f'{self.user.username} profilis'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        img = Image.open(self.nuotrauka.path)
+        if img.height > 300 or img.width > 300:
+            output_size = (300, 300)
+            img.thumbnail(output_size)
+            img.save(self.nuotrauka.path)
+
+
+# extend the User model
+User.profilis = property(lambda u: Profilis.objects.get_or_create(user=u)[0])

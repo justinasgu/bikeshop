@@ -1,20 +1,17 @@
-from django.shortcuts import render, get_object_or_404, redirect, reverse
+from django.shortcuts import render, redirect, reverse
 from django.views import generic
-from django.core.paginator import Paginator
 from django.db.models import Q
-from django.contrib.auth.forms import UserCreationForm
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
 from django.views.generic.edit import FormMixin
-from .models import Bike, Category, Brand, Order, OrderLine
-from .forms import OrderForm, CommentForm
+from .models import Bike, Category, Brand, Order
+from .forms import OrderForm, CommentForm, UserUpdateForm, ProfilisUpdateForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Count
 from django.contrib.auth.models import User
 
 
-# Bike list view
 def index(request):
     brandu_kiekis = Brand.objects.count()
     modeliu_kiekis = Bike.objects.count()
@@ -29,7 +26,6 @@ def index(request):
         'num_visits': num_visits,
     }
     return render(request, 'index.html', context=kontekstas)
-
 
 
 @csrf_protect
@@ -65,33 +61,10 @@ def register(request):
 class BikeListView(generic.ListView):
     model = Bike
     template_name = 'bike_list.html'
+    paginate_by = 6
     context_object_name = 'bikes'
 
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-
-        # Filter bikes by category and/or brand
-        category_slug = self.kwargs.get('category_slug')
-        brand_slug = self.kwargs.get('brand_slug')
-        if category_slug:
-            category = get_object_or_404(Category, slug=category_slug)
-            queryset = queryset.filter(category=category)
-        if brand_slug:
-            brand = get_object_or_404(Brand, slug=brand_slug)
-            queryset = queryset.filter(brand=brand)
-
-        # Filter bikes by search query
-        search_query = self.request.GET.get('q')
-        if search_query:
-            queryset = queryset.filter(
-                Q(name__icontains=search_query) | Q(description__icontains=search_query)
-            )
-
-        return queryset
-
-
-# Bike detail view with comment form
 class BikeDetailView(FormMixin, generic.DetailView):
     model = Bike
     template_name = 'bike_detail.html'
@@ -106,14 +79,7 @@ class BikeDetailView(FormMixin, generic.DetailView):
         context['comment_form'] = self.get_form()
         return context
 
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        form.instance.bike = self.object
-        form.save()
-        messages.success(self.request, 'Your comment has been posted.')
-        return super().form_valid(form)
 
-# User orders list view
 class OrderListView(LoginRequiredMixin, UserPassesTestMixin, generic.ListView):
     model = Order
     template_name = 'order_list.html'
@@ -127,9 +93,6 @@ class OrderListView(LoginRequiredMixin, UserPassesTestMixin, generic.ListView):
         return Order.objects.filter(user=self.request.user)
 
 
-
-
-# Category list view
 class CategoryListView(generic.ListView):
     model = Category
     template_name = 'category_list.html'
@@ -141,19 +104,15 @@ class CategoryDetailView(FormMixin, generic.DetailView):
     model = Category
     template_name = 'category_detail.html'
     context_object_name = 'category'
+    paginate_by = 3
     form_class = CommentForm
 
 
-# Brand list view
 class BrandListView(generic.ListView):
     model = Brand
     template_name = 'brand_list.html'
     context_object_name = 'brands'
     queryset = model.objects.annotate(num_bikes=Count('bike'))
-
-
-
-
 
 
 class BrandDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailView):
@@ -165,9 +124,6 @@ class BrandDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailVie
         return self.request.user.is_authenticated
 
 
-
-
-# Order create view
 class OrderCreateView(LoginRequiredMixin, generic.CreateView):
     model = Order
     template_name = 'order_create.html'
@@ -179,9 +135,8 @@ class OrderCreateView(LoginRequiredMixin, generic.CreateView):
         form.instance.status = 'pending'
         messages.success(self.request, 'Your order has been created!')
         return super().form_valid(form)
-#
 
-# Order detail view
+
 class OrderDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailView):
     model = Order
     template_name = 'order_detail.html'
@@ -191,7 +146,6 @@ class OrderDetailView(LoginRequiredMixin, UserPassesTestMixin, generic.DetailVie
         return self.request.user.is_authenticated
 
 
-# Order update view
 class OrderUpdateView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
     model = Order
     template_name = 'order_update.html'
@@ -207,7 +161,6 @@ class OrderUpdateView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateVie
         return self.request.user.is_authenticated
 
 
-# Order delete view
 class OrderDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
     model = Order
     template_name = 'order_delete.html'
@@ -217,14 +170,33 @@ class OrderDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteVie
         messages.success(self.request, 'Your order has been deleted.')
         return reverse('order_list')
 
-
     def test_func(self):
         return self.request.user.is_authenticated
 
 
-
-
 def search(request):
     query = request.GET.get('query')
-    search_results = Bike.objects.filter(Q(name__icontains=query) | Q(category__name__icontains=query) | Q(brand__name__icontains=query))
+    search_results = Bike.objects.filter(
+        Q(name__icontains=query) | Q(category__name__icontains=query) | Q(brand__name__icontains=query))
     return render(request, 'search.html', {'bikes': search_results, 'query': query})
+
+
+@login_required
+def profilis(request):
+    if request.method == "POST":
+        u_form = UserUpdateForm(request.POST, instance=request.user)
+        p_form = ProfilisUpdateForm(request.POST, request.FILES, instance=request.user.profilis)
+        if u_form.is_valid() and p_form.is_valid():
+            u_form.save()
+            p_form.save()
+            messages.success(request, f"Profilis atnaujintas")
+            return redirect('profilis')
+    else:
+        u_form = UserUpdateForm(instance=request.user)
+        p_form = ProfilisUpdateForm(instance=request.user.profilis)
+
+    context = {
+        'u_form': u_form,
+        'p_form': p_form,
+    }
+    return render(request, 'profilis.html', context)
