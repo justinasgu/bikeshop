@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Count
 from django.contrib.auth.models import User
+from django.views.generic import TemplateView
 
 
 def index(request):
@@ -26,6 +27,8 @@ def index(request):
         'num_visits': num_visits,
     }
     return render(request, 'index.html', context=kontekstas)
+
+
 
 
 @csrf_protect
@@ -199,3 +202,6 @@ def profilis(request):
         'p_form': p_form,
     }
     return render(request, 'profilis.html', context)
+
+
+
