@@ -61,15 +61,6 @@ class Order(models.Model):
         return f"{self.user.username} - {self.bike.name}"
 
 
-class OrderLine(models.Model):
-    order = models.ForeignKey('Order', on_delete=models.CASCADE)
-    bike = models.ForeignKey('Bike', on_delete=models.PROTECT)
-    quantity = models.PositiveIntegerField()
-    price = models.DecimalField(max_digits=8, decimal_places=2)
-
-    def __str__(self):
-        return f'{self.quantity} x {self.bike.name}'
-
 
 class Comment(models.Model):
     bike = models.ForeignKey('Bike', on_delete=models.CASCADE)

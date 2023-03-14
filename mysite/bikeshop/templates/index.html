@@ -1,17 +1,18 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block title %}asdasdsa{% endblock %}
 
 {% block content %}
+<div style="display: flex; align-items: center;">
+        <h1 style="margin-right: 20px;">Welcome to our Bike Shop</h1>
+        <img src="{% static 'images/logo.png' %}" alt="Logo" width="100">
+    </div>
+    <h2>Stats of Bike Shop:</h2>
+    <ul>
+        <li>Brands of Bikes: <b>{{ brandu_kiekis }}</b></li>
+        <li>Made Orders by User: <b>{{ atliktu_uzsakymu_kiekis }}</b></li>
+        <li>Models of Bikes: <b>{{ modeliu_kiekis }}</b></li>
+    </ul>
 
-<h1>Stats of Bike Shop:</h1>
-
-<ul>
-    <li>Brands of Bikes: <b>{{ brandu_kiekis }}</b></li>
-    <li>Made Orders by User: <b>{{ atliktu_uzsakymu_kiekis }}</b></li>
-    <li>Models of Bikes: <b>{{ modeliu_kiekis }}</b></li>
-</ul>
-<p>This site you already visited {{ num_visits }} time(s).</p>
-
+    <p>This site you already visited {{ num_visits }} time(s).</p>
 {% endblock %}
-

@@ -104,7 +104,6 @@ class CategoryDetailView(FormMixin, generic.DetailView):
     model = Category
     template_name = 'category_detail.html'
     context_object_name = 'category'
-    paginate_by = 3
     form_class = CommentForm
 
 
